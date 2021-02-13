@@ -6,7 +6,7 @@ pitch_result = 'strike'
 pitch_type = 'fastball'
 pitch = None
 ball_color = 'Red'
-pitches = {}
+data = {}
 pitch_idx = 1
 current_idx = 1
 
@@ -23,6 +23,7 @@ margin = 200
 radius = 10
 rows = 3
 cols = 3
+current_idx = 1
 
 
 
@@ -71,18 +72,20 @@ def recordClick(event):
     global ball_color
     global pitches
     global pitch_idx
+    global current_idx
     if pitch is not None:
         C.delete(pitch)
     x, y = event.x, event.y
 
     pitch = C.create_oval(x-radius, y-radius, x+radius, y+radius, outline='black', fill=ball_color)
 
-    pitches[pitch_idx] = C.coords(pitch)
+    data[pitch_idx] = [C.coords(pitch), [pitch_result], [ball_color]]
     pitch_idx+=1
     current_idx+=1
     #print(C.coords(pitch))
     #print(C.coords(pitches[1]))
-    print(pitches)
+    print(data)
+    print(current_idx)
 
 def changeBall(event):
     global pitch_result
@@ -96,29 +99,41 @@ def changeStrike(event):
     pitch_result = 'strike'
     ball_color = 'red'
 
-def setBallColor(pitch_result)
-    if pitch_result
-
 def backPitch(event):
     global current_idx
-    global pitches
-    global pitch_result
+    if current_idx > 1:
+        current_idx -= 1
+    if pitch is not None:
+        C.delete(pitch)
+    x1 = data[current_idx][0][0]
+    y1 = data[current_idx][0][1]
+    x2 = data[current_idx][0][2]
+    y2 = data[current_idx][0][3]
+    ball_color = data[current_idx][2][0]
+    C.create_oval(x1, y1, x2, y2, outline='black', fill=ball_color)
 
-    current_idx -= 1
+def forwardPitch(event):
+    global current_idx
+    if current_idx < max(data.keys()):
+        current_idx+=1
+    if pitch is not None:
+        C.delete(pitch)
+    x1 = data[current_idx][0][0]
+    y1 = data[current_idx][0][1]
+    x2 = data[current_idx][0][2]
+    y2 = data[current_idx][0][3]
+    ball_color = data[current_idx][2][0]
+    C.create_oval(x1, y1, x2, y2, outline='black', fill=ball_color)
 
     
-    C.create_oval(pitches[current_idx], fill=)
 
 
-
-
-    
-    
 
 base.bind('<Button-1>', recordClick)
 base.bind('<w>', changeStrike)
 base.bind('<e>', changeBall)
-
+base.bind('<Left>', backPitch)
+base.bind('<Right>', forwardPitch)
 base.mainloop()
 
 

@@ -1,10 +1,10 @@
 import tkinter as tk
+from tkinter import Frame
 from pandastable import Table
 import pandas as pd
 
 pitch_result = 'strike'
 pitch_type = 'fastball'
-pitch = None
 ball_color = 'Red'
 data = {}
 pitch_idx = 1
@@ -12,13 +12,14 @@ current_idx = 1
 
 
 
-df = pd.DataFrame(columns = ["x", "y", "pitch_type"])
+df = pd.DataFrame(columns = ["x", "y", "pitch result", "pitch type"])
 
 base = tk.Tk()
+base.state("zoomed")  #to make it full screen
 
 # Set the parameters
-height = 800
-width = 800
+height = 900
+width = 1000
 margin = 200
 radius = 10
 rows = 3
@@ -28,10 +29,14 @@ current_idx = 1
 
 
 # Build the basic gui
-C = tk.Canvas(base, bg='#0d1524', height =height, width=width)
+C = tk.Canvas(base, bg='#0d1524', height=600, width=1024)
 C.create_text(width/2,30,fill="white",font="Times 20 bold",
                         text="Strikezone Grid")
 
+txt = C.create_text(60,30,fill="white",font="Times 12 bold",
+                        text='Pitch Number: '+ str(current_idx))
+
+pitch = C.create_oval(0, 1, 2, 3, outline='#0d1524', fill='#0d1524')
 
 
 # Build the strike zone coordinates
@@ -59,33 +64,34 @@ for val in range(rows):
 
 
 
-#C2 = tk.Canvas(base, bg='White', height =height, width=width)
-#pt = Table(C2, dataframe=df, showtoolbar=True, showstatusbar=True)
-#pt.show()
+C2 = tk.Canvas(base, bg='White', height =height, width=width)
+pt = Table(C2, dataframe=df, showtoolbar=True, showstatusbar=True)
+pt.show()
 
-C.pack()
+C.pack(side='left', fill='both', expand=True)
+C2.pack(side='right', fill='both', expand=True)
 
 
 def recordClick(event):
     global df
     global pitch
     global ball_color
-    global pitches
     global pitch_idx
     global current_idx
-    if pitch is not None:
-        C.delete(pitch)
     x, y = event.x, event.y
 
-    pitch = C.create_oval(x-radius, y-radius, x+radius, y+radius, outline='black', fill=ball_color)
-
+    C.coords(pitch, x-radius, y-radius, x+radius, y+radius)
+    C.itemconfig(pitch, fill=ball_color, outline='black')
     data[pitch_idx] = [C.coords(pitch), [pitch_result], [ball_color]]
+    df.loc[current_idx] = pd.Series({'x':x, 'y':y, 'pitch result':pitch_result, 'pitch type':pitch_type})
+    print(df.head())
     pitch_idx+=1
     current_idx+=1
     #print(C.coords(pitch))
     #print(C.coords(pitches[1]))
     print(data)
     print(current_idx)
+    pt.redraw()
 
 def changeBall(event):
     global pitch_result
@@ -101,39 +107,48 @@ def changeStrike(event):
 
 def backPitch(event):
     global current_idx
+    global pitch
+    global txt
     if current_idx > 1:
         current_idx -= 1
-    if pitch is not None:
-        C.delete(pitch)
     x1 = data[current_idx][0][0]
     y1 = data[current_idx][0][1]
     x2 = data[current_idx][0][2]
     y2 = data[current_idx][0][3]
     ball_color = data[current_idx][2][0]
-    C.create_oval(x1, y1, x2, y2, outline='black', fill=ball_color)
+    print(current_idx)
+    C.coords(pitch, x1, y1, x2, y2)
+    C.itemconfig(pitch, fill=ball_color, outline='black')
+    C.itemconfigure(txt, text='Pitch Number: '+ str(current_idx))
 
 def forwardPitch(event):
     global current_idx
+    global pitch
+    global txt
     if current_idx < max(data.keys()):
         current_idx+=1
-    if pitch is not None:
-        C.delete(pitch)
     x1 = data[current_idx][0][0]
     y1 = data[current_idx][0][1]
     x2 = data[current_idx][0][2]
     y2 = data[current_idx][0][3]
     ball_color = data[current_idx][2][0]
-    C.create_oval(x1, y1, x2, y2, outline='black', fill=ball_color)
+    print(current_idx)
+    C.coords(pitch, x1, y1, x2, y2)
+    C.itemconfig(pitch, fill=ball_color, outline='black')
+    C.itemconfigure(txt, text='Pitch Number: '+ str(current_idx))
+
+
+
 
     
 
 
 
-base.bind('<Button-1>', recordClick)
+base.bind('<Button-3>', recordClick)
 base.bind('<w>', changeStrike)
 base.bind('<e>', changeBall)
-base.bind('<Left>', backPitch)
-base.bind('<Right>', forwardPitch)
+base.bind('<a>', backPitch)
+base.bind('<d>', forwardPitch)
 base.mainloop()
 
 

@@ -15,6 +15,7 @@ current_idx = 1
 df = pd.DataFrame(columns = ["x", "y", "pitch result", "pitch type"])
 
 base = tk.Tk()
+base.title('Pitch Location Tracker')
 base.state("zoomed")  #to make it full screen
 
 # Set the parameters

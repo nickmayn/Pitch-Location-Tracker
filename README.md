@@ -30,7 +30,7 @@ python gui.py
 
 After running the app the following gui will appear:
 
-![alt text](images/Summary_Look.png?raw=true)
+![](images/Summary_Look.png?raw=true)
 
 
 ## Controls
@@ -38,7 +38,7 @@ After running the app the following gui will appear:
 
 <kbd>Button-2</kbd> : On the table will bring up the export ability that looks as follows:
 
-![alt text](images/save_file.png?raw=true)
+![](images/save_file.png?raw=true)
 
 <kbd>w</kbd>: Change pitch type to strike.
 

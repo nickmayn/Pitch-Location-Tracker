@@ -85,6 +85,7 @@ def recordClick(event):
     data[pitch_idx] = [C.coords(pitch), [pitch_result], [ball_color]]
     df.loc[current_idx] = pd.Series({'x':x, 'y':y, 'pitch result':pitch_result, 'pitch type':pitch_type})
     print(df.head())
+    C.itemconfigure(txt, text='Pitch Number: '+ str(current_idx))
     pitch_idx+=1
     current_idx+=1
     #print(C.coords(pitch))
@@ -144,7 +145,7 @@ def forwardPitch(event):
 
 
 
-base.bind('<Button-3>', recordClick)
+base.bind('<Button-1>', recordClick)
 base.bind('<w>', changeStrike)
 base.bind('<e>', changeBall)
 base.bind('<a>', backPitch)
